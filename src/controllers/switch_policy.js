@@ -2,9 +2,13 @@ const {
   fetchSwitchPolicies,
   saveSwitchPolicy,
 } = require("../persist/switch_policy");
+const {
+  LoggerService
+} = require("../logger");
+const logger = LoggerService.getInstance();
 
 const getSwitchPolicies = async (ctx, next) => {
-  console.info("called fetchSwitchPolicies");
+  logger.info("called getSwitchPolicies");
 
   const persist = ctx.state.persist_sw;
   const response = await fetchSwitchPolicies(persist);
@@ -16,7 +20,7 @@ const getSwitchPolicies = async (ctx, next) => {
 };
 
 const upsertSwitchPolicy = async (ctx, next) => {
-  console.info("called upsertSwitchPolicy");
+  logger.info("called upsertSwitchPolicy");
 
   const switch_policy_data = ctx.request.body;
   const persist = ctx.state.persist_sw;

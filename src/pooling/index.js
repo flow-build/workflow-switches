@@ -4,6 +4,11 @@ const { fetchSwitches, saveSwitch } = require("../persist/switch");
 const { fetchSwitchPolicies } = require("../persist/switch_policy");
 const { fetchProcesses, fetchProcessState } = require("../persist/process");
 
+const {
+  LoggerService
+} = require("../logger");
+const logger = LoggerService.getInstance();
+
 const { promisify } = require("util");
 const sleep = promisify(setTimeout);
 
@@ -14,7 +19,7 @@ async function startInspectionPooling() {
         const policies = await fetchSwitchPolicies(sw_persist);
         const opened_switches = await fetchSwitches(wf_persist, { active: true });
 
-        console.info("opened_switches: ", opened_switches);
+        logger.info("opened_switches: ", opened_switches);
 
         const available_policies = [];
         for (let policy of policies) {
@@ -27,14 +32,14 @@ async function startInspectionPooling() {
             }
         }
         
-        console.info("available_policies: ", available_policies);
+        logger.info("available_policies: ", available_policies);
 
         for(let policy of available_policies) {
             const { workflow_id, node_id, opening_policy, batch } = policy;
-            // console.info("Opening Policy: ", opening_policy);
+            // logger.info("Opening Policy: ", opening_policy);
 
             const processes = await fetchProcesses(wf_persist, { workflow_id, batch });
-            // console.info("Processes: ", processes);
+            // logger.info("Processes: ", processes);
 
             const { failures: target_failures } = opening_policy;
             let failures = 0;
@@ -49,10 +54,10 @@ async function startInspectionPooling() {
                 }
             }
 
-            console.info("Failures: ", failures);
+            logger.info("Failures: ", failures);
 
             if(failures >= target_failures) {
-                console.info("SWITCH MUST OPEN");
+                logger.info("SWITCH MUST OPEN");
                 
                 const open_switch = {
                     created_at: new Date(),
@@ -64,11 +69,11 @@ async function startInspectionPooling() {
                     closing_policy: policy.closing_policy,
                 };
 
-                console.info("OPEN_SWITCH: ", open_switch);
+                logger.info("OPEN_SWITCH: ", open_switch);
 
                 const open_switch_result = await saveSwitch(wf_persist, open_switch);
                 
-                console.info("open_switch_result: ", open_switch_result);
+                logger.info("open_switch_result: ", open_switch_result);
             }
             
             await sleep(1000);
