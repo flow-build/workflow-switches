@@ -1,14 +1,15 @@
 const { 
   fetchSwitchPolicies,
   saveSwitchPolicy,
+  removeSwitchPolicy
 } = require("../persist/switch_policy");
 const {
   LoggerService
 } = require("../logger");
 const logger = LoggerService.getInstance();
 
-const getSwitchPolicies = async (ctx, next) => {
-  logger.info("called getSwitchPolicies");
+const readSwitchPolicies = async (ctx, next) => {
+  logger.info("called readSwitchPolicies");
 
   const persist = ctx.state.persist_sw;
   const response = await fetchSwitchPolicies(persist);
@@ -51,12 +52,50 @@ const upsertSwitchPolicy = async (ctx, next) => {
   if(status === 'success') {
     ctx.status = 201;
     ctx.body = response;
+    return next();
   }
 
+  if(status === 'error') {
+    ctx.status = 500;
+    ctx.body = response;
+    return next();
+  }
+
+  ctx.status = status;
+  return next();
+};
+
+const deleteSwitchPolicy = async (ctx, next) => {
+  const switch_id = ctx.request.params.id;
+  logger.info(`called deleteSwitchPolicy on ID: ${switch_id}`);
+
+  const persist = ctx.state.persist_sw;
+  
+  let response, status;
+  try {
+    ([response, status] = await removeSwitchPolicy(persist, { id: switch_id }));
+  } catch(err) {
+    status = 500;
+  }
+
+  if(status === 'success') {
+    ctx.status = 204;
+    ctx.body = response;
+    return next();
+  }
+
+  if(status === 'error') {
+    ctx.status = 500;
+    ctx.body = response;
+    return next();
+  }
+
+  ctx.status = status;
   return next();
 };
 
 module.exports = {
-    getSwitchPolicies,
+    readSwitchPolicies,
     upsertSwitchPolicy,
+    deleteSwitchPolicy
 };

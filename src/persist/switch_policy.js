@@ -24,12 +24,26 @@ module.exports = {
                 return [null, 'error'];
             }    
         }
-        switch_policy.id = uuid();
-        switch_policy.created_at = new Date();
-        switch_policy.active = false;
+        const switch_data = {
+            id: uuid(),
+            created_at: new Date(),
+            active: false,
+            ...switch_policy,
+        }
         try {
-            await persist("switch_policy").insert(switch_policy);
-            return [switch_policy, 'success'];
+            await persist("switch_policy").insert(switch_data);
+            return [switch_data, 'success'];
+        } catch(err) {
+            return [null, 'error'];
+        }
+    },
+    removeSwitchPolicy: async(persist, { id: switch_id }) => {
+        if(!switch_id) {
+            return [null, 'error'];    
+        }
+        try {
+            await persist("switch_policy").delete().where("id", switch_id);
+            return [1, 'success'];
         } catch(err) {
             return [null, 'error'];
         }
