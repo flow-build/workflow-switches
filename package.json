@@ -1,0 +1,33 @@
+{
+  "name": "switch-policies",
+  "version": "1.0.0",
+  "description": "System to register switch policies and inspect processes",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:cov": "npm run test --coverage",
+    "start": "node src/server.js",
+    "start:dev": "export $(cat .env.docker | xargs) && npm run migrations:sw && nodemon --inspect=0.0.0.0 src/server.js",
+    "migrations:sw": "knex --env ${KNEX_ENV_SWITCH} --knexfile knexfile.js migrate:latest",
+    "migrations:wf": " knex --env ${KNEX_ENV_WORKFLOW} --knexfile knexfile.js migrate:latest",
+    "seeds:sw": "knex --env ${KNEX_ENV_SWITCH} --knexfile knexfile.js seed:run"
+  },
+  "author": "FDTE-DSD",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/router": "^12.0.0",
+    "ajv": "^8.11.2",
+    "dotenv-flow": "^3.2.0",
+    "knex": "^2.3.0",
+    "koa": "^2.14.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa2-cors": "^2.0.6",
+    "pg": "^8.8.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
+  }
+}
