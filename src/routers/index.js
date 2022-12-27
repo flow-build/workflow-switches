@@ -14,7 +14,7 @@ module.exports = (opts = {}) => {
   const locks = new Router();
   locks.prefix("/switch");
   locks.get("/", switchPolicyController.getSwitchPolicies);
-  locks.post("/", switchPolicyController.createSwitchPolicy);
+  locks.post("/", switchPolicyController.upsertSwitchPolicy);
 
   router.use(locks.routes());
 
