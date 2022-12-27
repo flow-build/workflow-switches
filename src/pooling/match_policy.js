@@ -2,9 +2,6 @@ const Ajv = require("ajv");
 const ajv = new Ajv();
 
 function matchConditions(opening_policy, process_states) {
-    console.info("Opening Policy: ", opening_policy);
-    console.info("ProcessStates: ", process_states);
-
     const validatePolicy = ajv.compile({
         type: 'object',
         properties: {
@@ -19,8 +16,6 @@ function matchConditions(opening_policy, process_states) {
     if(!is_policy_valid) {
         return false;
     }
-
-    console.info("Policy is valid!");
 
     const {
         error: target_error,
@@ -67,7 +62,7 @@ function matchConditions(opening_policy, process_states) {
         }
     }
 
-    console.log("MATCH FAILURES: ", failures);
+    
 
     if(failures > 0) {
         return true;

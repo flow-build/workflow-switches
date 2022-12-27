@@ -16,10 +16,12 @@ async function startInspectionPooling() {
     const wf_persist = db_wf;
     const sw_persist = db_sw;
     while(true) {
+        logger.info("Starting Inspection Loop");
+
         const policies = await fetchSwitchPolicies(sw_persist);
         const opened_switches = await fetchSwitches(wf_persist, { active: true });
 
-        logger.info("opened_switches: ", opened_switches);
+        logger.info(`Already Open Switches: ${opened_switches.length}`);
 
         const available_policies = [];
         for (let policy of policies) {
@@ -32,14 +34,16 @@ async function startInspectionPooling() {
             }
         }
         
-        logger.info("available_policies: ", available_policies);
+        logger.info(`Policies to be evaluated: ${available_policies.length}`);
 
         for(let policy of available_policies) {
-            const { workflow_id, node_id, opening_policy, batch } = policy;
-            // logger.info("Opening Policy: ", opening_policy);
+            const { id: policy_id, workflow_id, node_id, opening_policy, batch } = policy;
+            logger.info(`Starting Inspection on policy: ${policy_id}, workflow_id: ${workflow_id}, node_id: ${node_id}`);
+
+            logger.debug(`Policy ID: ${policy_id}, content: ${JSON.stringify(policy)}`);
 
             const processes = await fetchProcesses(wf_persist, { workflow_id, batch });
-            // logger.info("Processes: ", processes);
+            logger.debug(`Policy ID: ${policy_id}, processes found: ${processes.length}`);
 
             const { failures: target_failures } = opening_policy;
             let failures = 0;
@@ -54,10 +58,10 @@ async function startInspectionPooling() {
                 }
             }
 
-            logger.info("Failures: ", failures);
+            logger.debug(`Policy ID: ${policy_id}, failures found: ${failures}`);
 
             if(failures >= target_failures) {
-                logger.info("SWITCH MUST OPEN");
+                logger.warn(`SWITCH MUST OPEN to due to policy: ${policy_id}`);
                 
                 const open_switch = {
                     created_at: new Date(),
@@ -68,18 +72,15 @@ async function startInspectionPooling() {
                     opening_policy: policy.opening_policy,
                     closing_policy: policy.closing_policy,
                 };
-
-                logger.info("OPEN_SWITCH: ", open_switch);
-
-                const open_switch_result = await saveSwitch(wf_persist, open_switch);
+                await saveSwitch(wf_persist, open_switch);
                 
-                logger.info("open_switch_result: ", open_switch_result);
+                logger.warn(`SWITCH WAS OPENED due to policy: ${policy_id}`);
             }
             
+            logger.info(`Finished Inspection on policy: ${policy_id}, workflow_id: ${workflow_id}, node_id: ${node_id}`);
             await sleep(1000);
         }
-        
-
+    
         await sleep(5000);
     }
 }
