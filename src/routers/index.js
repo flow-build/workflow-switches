@@ -1,6 +1,7 @@
 const Router = require("@koa/router");
 const bodyParser = require("koa-bodyparser");
 const switchPolicyController = require("../controllers/switch_policy");
+const healthCheckController = require("../controllers/health");
 
 module.exports = (opts = {}) => {
   const router = new Router();
@@ -11,6 +12,10 @@ module.exports = (opts = {}) => {
     router.use(middleware);
   }
 
+  const health = new Router();
+  health.prefix("/health");
+  health.get("/", healthCheckController.healthCheck);
+
   const locks = new Router();
   locks.prefix("/switch");
   locks.get("/", switchPolicyController.readSwitchPolicies);
@@ -18,6 +23,7 @@ module.exports = (opts = {}) => {
   locks.delete("/:id", switchPolicyController.deleteSwitchPolicy);
 
   router.use(locks.routes());
+  router.use(health.routes());
 
   return router;
 };
