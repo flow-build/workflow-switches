@@ -10,7 +10,7 @@ module.exports = {
       port: process.env.POSTGRES_PORT || "5432",
       user: process.env.POSTGRES_USER || "postgres",
       password: process.env.POSTGRES_PASSWORD || "postgres",
-      database: process.env.POSTGRES_DATABASE || "locks",
+      database: process.env.POSTGRES_DATABASE || "switch",
     },
     migrations: {
       directory: path.join(BASE_PATH, "switch/migrations"),
