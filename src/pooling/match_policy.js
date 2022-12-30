@@ -14,7 +14,7 @@ function matchConditions(opening_policy, process_states) {
     });
     const is_policy_valid = validatePolicy(opening_policy);
     if(!is_policy_valid) {
-        return false;
+        return [false, 'invalid_policy'];
     }
 
     const {
@@ -65,9 +65,9 @@ function matchConditions(opening_policy, process_states) {
     
 
     if(failures > 0) {
-        return true;
+        return [true, ''];
     }
-    return false;
+    return [false, 'did_not_match_condition'];
 }
 
 module.exports = {

@@ -12,9 +12,11 @@ const logger = LoggerService.getInstance();
 const { promisify } = require("util");
 const sleep = promisify(setTimeout);
 
-async function startInspectionPooling() {
+async function startInspectionPooling(options = {}) {
     const wf_persist = db_wf;
     const sw_persist = db_sw;
+
+    let iterations = 0;
     while(true) {
         logger.info("Starting Inspection Loop");
 
@@ -51,7 +53,7 @@ async function startInspectionPooling() {
                 const { process_id } = process;
                 const process_states = await fetchProcessState(wf_persist, { process_id, node_id });
 
-                const has_matched_condition = matchConditions(opening_policy, process_states);
+                const [has_matched_condition] = matchConditions(opening_policy, process_states);
 
                 if(has_matched_condition) {
                     failures+=1;
@@ -80,9 +82,17 @@ async function startInspectionPooling() {
             logger.info(`Finished Inspection on policy: ${policy_id}, workflow_id: ${workflow_id}, node_id: ${node_id}`);
             await sleep(1000);
         }
+
+        iterations+=1;
+        if(options && options.iterations) {
+            if(iterations>=options.iterations) {
+                break;
+            }
+        }
     
         await sleep(5000);
     }
+    return 1
 }
 
 module.exports = {
