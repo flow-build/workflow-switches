@@ -52,6 +52,17 @@ jest.mock('../../src/persist/process.js', () => {
     }
 });
 
+let workflow_mock = {
+    id: 'workflow_id',
+    name: 'workflow_name'
+};
+
+jest.mock('../../src/persist/workflow.js', () => {
+    return {
+        fetchWorkflowByName: jest.fn(() => Promise.resolve(workflow_mock)),
+    }
+});
+
 it('should fetch process for available policy', async() => {
     const res = await startInspectionPooling({ iterations: 1 });
 
