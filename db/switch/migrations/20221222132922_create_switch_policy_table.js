@@ -4,7 +4,7 @@ exports.up = function (knex, Promise) {
       table.uuid("id").primary();
       table.timestamp("created_at").notNullable();
       table.boolean("active").notNullable();
-      table.uuid("workflow_id").notNullable();
+      table.varchar("workflow_name").notNullable();
       table.varchar("node_id").notNullable();
       table.jsonb("opening_policy").notNullable();
       table.jsonb("closing_policy").notNullable();
