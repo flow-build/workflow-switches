@@ -3,6 +3,7 @@ const { matchConditions } = require("./match_policy");
 const { fetchSwitches, saveSwitch } = require("../persist/switch");
 const { fetchSwitchPolicies } = require("../persist/switch_policy");
 const { fetchProcesses, fetchProcessState } = require("../persist/process");
+const { fetchWorkflowByName } = require("../persist/workflow");
 
 const {
   LoggerService
@@ -27,20 +28,21 @@ async function startInspectionPooling(options = {}) {
 
         const available_policies = [];
         for (let policy of policies) {
+            const { id: workflow_id } = await fetchWorkflowByName(wf_persist, { name: policy.workflow_name });
             const is_already_opened = opened_switches.find((op_sw) => 
-                op_sw.workflow_id === policy.workflow_id && 
+                op_sw.workflow_id === workflow_id && 
                 op_sw.node_id === policy.node_id
             );
             if(!is_already_opened) {
-                available_policies.push(policy);
+                available_policies.push({ ...policy, workflow_id });
             }
         }
         
         logger.info(`Policies to be evaluated: ${available_policies.length}`);
 
         for(let policy of available_policies) {
-            const { id: policy_id, workflow_id, node_id, opening_policy, batch } = policy;
-            logger.info(`Starting Inspection on policy: ${policy_id}, workflow_id: ${workflow_id}, node_id: ${node_id}`);
+            const { id: policy_id, workflow_id, workflow_name, node_id, opening_policy, batch } = policy;
+            logger.info(`Starting Inspection on policy: ${policy_id}, workflow_name: ${workflow_name}, node_id: ${node_id}`);
 
             logger.debug(`Policy ID: ${policy_id}, content: ${JSON.stringify(policy)}`);
 
@@ -79,7 +81,7 @@ async function startInspectionPooling(options = {}) {
                 logger.warn(`SWITCH WAS OPENED due to policy: ${policy_id}`);
             }
             
-            logger.info(`Finished Inspection on policy: ${policy_id}, workflow_id: ${workflow_id}, node_id: ${node_id}`);
+            logger.info(`Finished Inspection on policy: ${policy_id}, workflow_name: ${workflow_name}, node_id: ${node_id}`);
             await sleep(1000);
         }
 

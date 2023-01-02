@@ -27,17 +27,19 @@ const upsertSwitchPolicy = async (ctx, next) => {
   const persist = ctx.state.persist_sw;
 
   const {
-    workflow_id,
+    workflow_name,
     node_id
   } = switch_policy_data
   
   let response, status;
   try {
     const [registered_switch_policy] = await fetchSwitchPolicies(persist, {
-      workflow_id,
+      workflow_name,
       node_id
     });
-    let register_data = switch_policy_data; 
+    let register_data = {
+      ...switch_policy_data
+    };
     if(registered_switch_policy) {
       register_data = {
         ...registered_switch_policy,

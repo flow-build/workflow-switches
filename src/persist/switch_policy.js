@@ -5,9 +5,9 @@ module.exports = {
         return await persist.select("*").from("switch_policy")
                             .modify((builder) => {
                                 if (options) {
-                                    const { workflow_id, node_id } = options;
-                                    if (workflow_id) {
-                                        builder.where({ "workflow_id": workflow_id });
+                                    const { workflow_name, node_id } = options;
+                                    if (workflow_name) {
+                                        builder.where({ "workflow_name": workflow_name });
                                     }
                                     if (node_id) {
                                         builder.where({ "node_id": node_id });
