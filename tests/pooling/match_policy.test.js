@@ -6,7 +6,19 @@ it('should not match if policy is invalid', () => {
     };
     const [ans, reason] = matchConditions(policy, []);
     expect(ans).toBeFalsy();
-    expect(reason).toBe('invalid_policy')
+    expect(reason).toBe('invalid_policy');
+});
+
+it('should not match if parsed object has no match', () => {
+    const policy = {
+        status: ['error'],
+        error: {type: 'object', properties: { test: { type: 'string' }}},
+        result: {type: 'null'},
+        failures: 1,
+    };
+    const [ans, reason] = matchConditions(policy, [{status: 'success', error: null, result: { key: 'value' }}]);
+    expect(ans).toBeFalsy();
+    expect(reason).toBe('did_not_match_condition');
 });
 
 it('should match with status', () => {
