@@ -1,5 +1,5 @@
 {
-  "name": "switch-policies",
+  "name": "@flowbuild/switch-policies",
   "version": "1.0.0",
   "description": "System to register switch policies and inspect processes",
   "main": "index.js",
