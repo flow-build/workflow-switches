@@ -1,6 +1,6 @@
 {
   "name": "@flowbuild/switch-policies",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "System to register switch policies and inspect processes",
   "main": "index.js",
   "author": "FDTE-DSD",
