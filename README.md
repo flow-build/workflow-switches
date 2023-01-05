@@ -55,3 +55,10 @@ To run the application, you may enable it on `docker-compose.yml` file:
 ```
 
 Besides switch database, you will need to run the workflow database.
+
+### tests
+
+Run:
+```
+npm run test
+```
