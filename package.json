@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "System to register switch policies and inspect processes",
   "main": "index.js",
+  "author": "FDTE-DSD",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "jest",
     "test:cov": "npm run test --coverage",
@@ -15,8 +20,6 @@
     "release": "semantic-release",
     "get-version": "echo $npm_package_version"
   },
-  "author": "FDTE-DSD",
-  "license": "ISC",
   "dependencies": {
     "@koa/router": "^12.0.0",
     "ajv": "^8.11.2",
