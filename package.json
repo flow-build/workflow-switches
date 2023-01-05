@@ -12,7 +12,8 @@
     "migrations:sw": "knex --env ${KNEX_ENV_SWITCH} --knexfile knexfile.js migrate:latest",
     "migrations:wf": " knex --env ${KNEX_ENV_WORKFLOW} --knexfile knexfile.js migrate:latest",
     "seeds:sw": "knex --env ${KNEX_ENV_SWITCH} --knexfile knexfile.js seed:run",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "get-version": "echo $npm_package_version"
   },
   "author": "FDTE-DSD",
   "license": "ISC",
